@@ -179,34 +179,26 @@ public class MainCanvas extends JPanel implements Runnable{
 				if (key == KeyEvent.VK_Z) {
 					Mat4x4 matrot = new Mat4x4();
 					matrot.setSacale(0.8f, 0.8f, 0.8f);
-					
-					Mat4x4 mr = modelview.multiplicaMatrizes(matrot,modelview);
-					modelview = mr;
+
+					aplicaEmTornoDoEixo(matrot);
 				}
 				if (key == KeyEvent.VK_X) {
 					Mat4x4 matrot = new Mat4x4();
 					matrot.setSacale(1.2f, 1.2f, 1.2f);
-					
-					Mat4x4 mr = modelview.multiplicaMatrizes(matrot,modelview);
-					modelview = mr;
+
+					aplicaEmTornoDoEixo(matrot);
 				}
 				if (key == KeyEvent.VK_Q) {
 					Mat4x4 matrot = new Mat4x4();
 					matrot.setRotateY(-5);
-					//System.out.println(modelview);
-					//System.out.println(matrot);
-					
-					Mat4x4 mr = modelview.multiplicaMatrizes(matrot,modelview);
-					//System.out.println(mr);
-					modelview = mr;
-					
+
+					aplicaEmTornoDoEixo(matrot);
 				}
 				if (key == KeyEvent.VK_E) {
 					Mat4x4 matrot = new Mat4x4();
 					matrot.setRotateY(+5);
-					
-					Mat4x4 mr = modelview.multiplicaMatrizes(matrot,modelview);
-					modelview = mr;
+
+					aplicaEmTornoDoEixo(matrot);
 				}
 				if (key == KeyEvent.VK_1) {
 					projecao.setParalelProjection();
@@ -313,6 +305,21 @@ public class MainCanvas extends JPanel implements Runnable{
 		
 	}
 	
+	// Aplica a transformacao m tendo o ponto do clique direito (eixoX, eixoY) como centro:
+	// modelview = T(eixo) * m * T(-eixo) * modelview
+	private void aplicaEmTornoDoEixo(Mat4x4 m) {
+		Mat4x4 paraOrigem = new Mat4x4();
+		paraOrigem.setTranslate(-eixoX, -eixoY, 0);
+
+		Mat4x4 deVolta = new Mat4x4();
+		deVolta.setTranslate(eixoX, eixoY, 0);
+
+		Mat4x4 mr = modelview.multiplicaMatrizes(paraOrigem, modelview);
+		mr = modelview.multiplicaMatrizes(m, mr);
+		mr = modelview.multiplicaMatrizes(deVolta, mr);
+		modelview = mr;
+	}
+
 	private void criaCubo(float x,float y, float z, float lx,float ly, float lz) {
 		Ponto3D p1 = new Ponto3D(x, y, z);
 		Ponto3D p2 = new Ponto3D(x+lx, y, z);
